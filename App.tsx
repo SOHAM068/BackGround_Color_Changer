@@ -1,9 +1,11 @@
-import {StatusBar, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {StatusBar, StyleSheet, Text, TouchableOpacity, View, Share} from 'react-native'
 import React from 'react'
 import { useState } from 'react';
 import { Clipboard } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
+
 
 export default function App() : JSX.Element {
   const [randomBackgroundColor, setRandomBackgroundColor] = useState('#ffffff');
@@ -26,6 +28,21 @@ export default function App() : JSX.Element {
       text1: 'Background color copied to clipboard!',
     });
   }
+  const shareBackgroundColor = async () => {
+    try {
+      const result = await Share.share({
+        message: `Background color: ${randomBackgroundColor}`,
+      });
+
+      if (result.action === Share.sharedAction) {
+        showToast();
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share operation dismissed');
+      }
+    } catch (error: any) {
+      console.error('Error sharing background color:', error.message);
+    }
+  };
   const handlePress = () => {
     CopyBackgroundColor();
     showToast();
@@ -49,11 +66,16 @@ export default function App() : JSX.Element {
       >
         <Icon name = 'copy' size = {30} color = '#000' />
       </TouchableOpacity>
+    <TouchableOpacity
+        onPress={shareBackgroundColor}
+        style={styles.copyButton2}
+      >
+        <Icon name = 'share-nodes' size = {30} color = '#000' />
+      </TouchableOpacity>
       <Toast
         position='top'
         bottomOffset={20}
       />
-      
     </>
   )
 }
@@ -84,5 +106,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     // borderRadius: 5,
     // elevation: 8,
-  }
+  },
+  copyButton2:{
+    position: 'absolute',
+    bottom: 20,
+    right: 70,
+    // backgroundColor: '#0077b6',
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    // borderRadius: 5,
+    // elevation: 8,
+  },
 })
